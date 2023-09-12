@@ -1,8 +1,11 @@
 package study.studyspring.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import study.studyspring.domain.Member;
 import study.studyspring.service.MemberService;
 
 @RestController
@@ -15,5 +18,16 @@ public class ApiController {
     public ApiController(MemberService memberService) {
         this.memberService = memberService;
         System.out.println("memberService = " + memberService.getClass());
+    }
+    
+    @PostMapping("/join")
+    public Long memberJoin(@RequestBody Member member) {
+        Long result = 0L;
+        try {
+            result = memberService.join(member);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 }
