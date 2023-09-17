@@ -1,21 +1,16 @@
 package study.studyspring.domain;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.math.BigInteger;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "TB_MEMBER")
+@Table(name = "MEMBER")
 //@DynamicInsert (insert 시 null 인필드 제외)  - DB에 default가 설정되어있을 시 사용
 /*
 @DynamicUpdate (update 시 null 인필드 제외) - 참고:https://huisam.tistory.com/entry/jpa-query-statement
@@ -25,14 +20,16 @@ DynamicUpdate 는 OptimisticLocking 을 사용할 때만 고려
 */
 public class Member {
 
-    @Id @Column(name = "idx") @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY DB가 자동으로 생성해줌
+    @Id
+    @Column(name = "idx") @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY DB가 자동으로 생성해줌
     private Long idx;
     private String id;
+    private String password;
     private String name;
     private String phone;
     private String addr;
     private String detailAddr;
-    private String grade;
+    private String role;
     private String useFlag;
     /*
     Response(서버→클라이언트) : @JsonFormat 사용.
