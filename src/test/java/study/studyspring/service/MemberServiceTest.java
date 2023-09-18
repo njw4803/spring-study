@@ -30,7 +30,7 @@ class MemberServiceTest {
         member.setName("hello");
         member.setAddr("test");
         member.setDetailAddr("test");
-        member.setGrade("V");
+        member.setRole("V");
         member.setPhone("01090231227");
         member.setCreateDate(LocalDateTime.now());
         member.setUseFlag("Y");

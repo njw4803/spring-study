@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import study.studyspring.config.auth.PrincipalDetails;
 import study.studyspring.domain.Member;
 import study.studyspring.repository.MemberRepository;
 
@@ -27,8 +28,8 @@ public class MainController {
     }
 
     @GetMapping("/member")
-    public @ResponseBody String member(/*@AuthenticationPrincipal PrincipalDetails principalDetails*/) {
-        //System.out.println("principalDetails.getUser() = " + principalDetails.getUser());
+    public @ResponseBody String member(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        System.out.println("principalDetails.getMember() = " + principalDetails.getMember());
         return "member";
     }
 

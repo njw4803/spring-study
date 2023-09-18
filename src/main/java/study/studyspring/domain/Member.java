@@ -1,6 +1,8 @@
 package study.studyspring.domain;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "MEMBER")
 //@DynamicInsert (insert 시 null 인필드 제외)  - DB에 default가 설정되어있을 시 사용
 /*
@@ -18,7 +21,7 @@ import java.time.LocalDateTime;
         그래서 application 성능에 안좋은 영향을 미칠수가 있다는 단점 또한 존재
 DynamicUpdate 는 OptimisticLocking 을 사용할 때만 고려
 */
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @Column(name = "idx") @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY DB가 자동으로 생성해줌
@@ -27,20 +30,29 @@ public class Member {
     private String password;
     private String name;
     private String phone;
+    private String email;
     private String addr;
     private String detailAddr;
     private String role;
     private String useFlag;
-    /*
-    Response(서버→클라이언트) : @JsonFormat 사용.
-    Request(클라이언트→서버) : @DateTimeFormat 사용.
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.sssZ")
-    */
+    private String provider;
+    private String providerId;
 
-    @CreationTimestamp // Insert 쿼리가 발생할 때 현재 시간 값을 적용.
-    private LocalDateTime createDate;
-
-    //@UpdateTimestamp Update 쿼리가 발생했을 때 현재 시간 값을 적용.
-    private LocalDateTime updateDate;
-
+    @Builder
+    public Member(String id, String password, String name,
+                  String phone, String email, String addr,
+                  String detailAddr, String role, String useFlag,
+                  String provider, String providerId) {
+        this.id = id;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.addr = addr;
+        this.detailAddr = detailAddr;
+        this.role = role;
+        this.useFlag = useFlag;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
 }

@@ -11,18 +11,26 @@ package study.studyspring.config.auth;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import study.studyspring.domain.Member;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 @Data
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
     private Member member;
+    private Map<String,Object> attributes;
 
     //일반 로그인
     public PrincipalDetails(Member member) {
         this.member = member;
+    }
+
+    public PrincipalDetails(Member member, Map<String, Object> attributes) {
+        this.member = member;
+        this.attributes = attributes;
     }
 
     //해당 Member의 권한을 리턴하는 곳
@@ -72,4 +80,13 @@ public class PrincipalDetails implements UserDetails {
         return true;
     }
 
+    @Override
+    public Map<String, Object> getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
 }

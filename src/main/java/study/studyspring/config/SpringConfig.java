@@ -1,4 +1,4 @@
-package study.studyspring;
+package study.studyspring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
