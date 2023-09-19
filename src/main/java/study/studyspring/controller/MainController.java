@@ -49,11 +49,6 @@ public class MainController {
         return "loginForm";
     }
 
-    @GetMapping("/joinForm")
-    public String joinForm() {
-        return "joinForm";
-    }
-
     @PostMapping("/join")
     public String join(Member member) {
         System.out.println("member = " + member);

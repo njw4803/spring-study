@@ -1,13 +1,11 @@
 package study.studyspring.domain;
 
+import io.swagger.models.auth.In;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,8 +29,9 @@ public class Member extends BaseEntity {
     private String name;
     private String phone;
     private String email;
-    private String addr;
-    private String detailAddr;
+    //private Integer zipCode;
+    //private String addr;
+    //private String detailAddr;
     private String role;
     private String useFlag;
     private String provider;
@@ -40,16 +39,13 @@ public class Member extends BaseEntity {
 
     @Builder
     public Member(String id, String password, String name,
-                  String phone, String email, String addr,
-                  String detailAddr, String role, String useFlag,
+                  String phone, String email, String role, String useFlag,
                   String provider, String providerId) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.addr = addr;
-        this.detailAddr = detailAddr;
         this.role = role;
         this.useFlag = useFlag;
         this.provider = provider;

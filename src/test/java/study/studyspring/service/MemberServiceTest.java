@@ -26,10 +26,8 @@ class MemberServiceTest {
     void join() {
         //Given 상황
         Member member = new Member();
-        member.setId("hello");
-        member.setName("hello");
-        member.setAddr("test");
-        member.setDetailAddr("test");
+        member.setId("hello4474");
+        member.setName("hello4474");
         member.setRole("V");
         member.setPhone("01090231227");
         member.setCreateDate(LocalDateTime.now());
