@@ -34,14 +34,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // usernameParameter() => input 태그에서 name="username2"로 커스터마이징하기 위한 설정, PrincipalDetailsService에서 loadUserByUsername(String username2) 로 받아야 정상 작동
                 .usernameParameter("id")
                 .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
-                .defaultSuccessUrl("/")
-                .and()
-                .oauth2Login()
-                .loginPage("/loginForm") // google 로그인이 완료된 뒤의 후처리가 필요.
+                .defaultSuccessUrl("/");
+                //.and()
+                //.oauth2Login()
+                //.loginPage("/loginForm") // google 로그인이 완료된 뒤의 후처리가 필요.
                 // 1.코드받기(인증), 2.엑세스토큰(권한), 3.사용자프로필 정보를 가져옴,
                 // 4-1. 그 정보를 토대로 회원가입 자동 진행
-                .userInfoEndpoint()// Tip. 코드x, (엑세스토큰 + 사용자프로필정보 o)
-                .userService(principalOauth2UserService);
+                //.userInfoEndpoint()// Tip. 코드x, (엑세스토큰 + 사용자프로필정보 o)
+                //.userService(principalOauth2UserService);
         // 4-2 . (이메일,전화번호,이름,아이디), 추가 정보가 필요할 때 쇼핑몰 => (집주소), 백화점몰 => (vip등급,일반등급)
 
     }

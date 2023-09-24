@@ -23,11 +23,16 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 템플릿 엔진 타임리프 추가
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5' // 타임리프에 시큐리티 통합 적용
+	implementation 'org.springframework.boot:spring-boot-starter-web' // web mvc 추가
 	compileOnly('org.springframework.boot:spring-boot-devtools')
 	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+
+	//Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
 	//Lombok
 	implementation 'org.projectlombok:lombok'
@@ -49,6 +54,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation 'org.springframework.security:spring-security-test'
 
+	// OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' //oauth2
 }
 

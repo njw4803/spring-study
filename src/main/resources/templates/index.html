@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>인덱스페이지</title>
-</head>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments.html::header"></head>
 <body>
-<h1>메인페이지입니다.</h1>
+<header th:insert="fragments.html::nav"></header>
+<div>
+    <h1>메인페이지입니다.</h1>
+</div>
 </body>
 </html>

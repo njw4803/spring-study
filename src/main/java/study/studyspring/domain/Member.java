@@ -33,13 +33,14 @@ public class Member extends BaseEntity {
     //private String addr;
     //private String detailAddr;
     private String role;
+    private String grade;
     private String useFlag;
     private String provider;
     private String providerId;
 
     @Builder
     public Member(String id, String password, String name,
-                  String phone, String email, String role, String useFlag,
+                  String phone, String email, String role, String grade, String useFlag,
                   String provider, String providerId) {
         this.id = id;
         this.password = password;
@@ -47,6 +48,7 @@ public class Member extends BaseEntity {
         this.phone = phone;
         this.email = email;
         this.role = role;
+        this.grade = grade;
         this.useFlag = useFlag;
         this.provider = provider;
         this.providerId = providerId;

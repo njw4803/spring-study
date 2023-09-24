@@ -24,11 +24,11 @@ public class PrincipalDetailsService implements UserDetailsService {
     // 함수 종료 시 @AuthenticationPrincipal 어노테이션이 만들어진다.
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+
         // Null이 아니라 값이 있으면 동작
-        Member memberEntity = memberRepository.findById(id);
-        if (memberEntity != null) {
-            return new PrincipalDetails(memberEntity);
-        }
+        memberRepository.findById(id)
+                .ifPresent(PrincipalDetails::new);
         return null;
     }
+
 }

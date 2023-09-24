@@ -4,11 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import study.studyspring.config.PasswordEncoderConfig;
 import study.studyspring.config.auth.PrincipalDetails;
 import study.studyspring.domain.Member;
 import study.studyspring.repository.MemberRepository;
@@ -20,7 +22,7 @@ public class MainController {
     private MemberRepository memberRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/")
     public String main() {
@@ -52,12 +54,13 @@ public class MainController {
     @PostMapping("/join")
     public String join(Member member) {
         System.out.println("member = " + member);
-        member.setRole("F");
+        member.setRole("ADMIN");
+        member.setGrade("F");
         member.setUseFlag("U");
         String rawPassword = member.getPassword();
-        String encPassword = bCryptPasswordEncoder.encode(rawPassword);
+        String encPassword = passwordEncoder.encode(rawPassword);
         member.setPassword(encPassword);
-        memberRepository.save(member);//회원가입. 비밀번호: 1234 => 패스워드가 암호화가 안되어있어서 시큐리티로 로그인 할 수 없음.
+        memberRepository.save(member); //회원가입
 
         return "redirect:/loginForm";
     }
