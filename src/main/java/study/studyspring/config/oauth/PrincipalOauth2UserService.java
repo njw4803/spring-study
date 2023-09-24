@@ -22,7 +22,7 @@ import java.util.Optional;
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
-    @Autowired
+    /*@Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
@@ -66,7 +66,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2UserInfo.getEmail();
         String role = "F";
 
-        Member memberEntity = memberRepository.findById(id);
+       *//* Member memberEntity = memberRepository.findById(id);
         if (memberEntity == null) {
             System.out.println("소셜 로그인이 최초입니다.");
             memberEntity = memberEntity.builder()
@@ -81,8 +81,8 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
             memberRepository.save(memberEntity);
         } else {
             System.out.println("로그인을 이미 한적이 있습니다. 당신은 자동회원가입이 되어 있습니다.");
-        }
+        }*//*
 
         return new PrincipalDetails(memberEntity, oauth2User.getAttributes());
-    }
+    }*/
 }

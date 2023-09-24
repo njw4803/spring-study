@@ -2,7 +2,7 @@
 <html
         lang="ko"
         xmlns:th="http://www.thymeleaf.org"
-        xmlns:security="http://www.thymeleaf.org/extras/spring-security"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
 <!-- fragment header를 정의합니다. -->
 <head th:fragment="header">
@@ -28,8 +28,8 @@
           <li class="nav-item">
             <p
                     class="nav-link active"
-                    security:authorize="isAuthenticated()"
-                    security:authentication="name">
+                    sec:authorize="isAuthenticated()"
+                    sec:authentication="name">
             </p>
           </li>
           <li class="nav-item">
@@ -39,7 +39,7 @@
             <!-- 관리자만 -->
             <a
                     class="nav-link active"
-                    security:authorize="hasAnyRole('ADMIN')"
+                    sec:authorize="hasRole('A')"
                     th:href="@{/admin}"
             >
               관리자 페이지
@@ -49,27 +49,17 @@
             <!-- 로그인한 사람 모두 -->
             <a
                     class="nav-link active"
-                    security:authorize="isAuthenticated()"
+                    sec:authorize="isAuthenticated()"
                     th:href="@{/notice}"
             >
               공지사항
             </a>
           </li>
           <li class="nav-item">
-            <!-- 유저만 -->
-            <a
-                    class="nav-link active"
-                    security:authorize="hasAnyRole('USER')"
-                    th:href="@{/note}"
-            >
-              개인노트
-            </a>
-          </li>
-          <li class="nav-item">
             <!-- 로그인 안한 사람만 -->
             <a
                     class="nav-link active"
-                    security:authorize="!isAuthenticated()"
+                    sec:authorize="!isAuthenticated()"
                     th:href="@{/loginForm}"
             >
               로그인
@@ -79,8 +69,8 @@
             <!-- 로그인 안한 사람만 -->
             <a
                     class="nav-link active"
-                    security:authorize="!isAuthenticated()"
-                    th:href="@{/signup}"
+                    sec:authorize="!isAuthenticated()"
+                    th:href="@{/loginForm}"
             >
               회원가입
             </a>
@@ -89,7 +79,7 @@
             <!-- 로그인한 사람만 -->
             <a
                     class="nav-link active"
-                    security:authorize="isAuthenticated()"
+                    sec:authorize="isAuthenticated()"
                     th:href="@{/logout}"
             >
               로그아웃

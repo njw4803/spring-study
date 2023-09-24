@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import study.studyspring.config.PasswordEncoderConfig;
 import study.studyspring.config.auth.PrincipalDetails;
@@ -18,11 +19,13 @@ import study.studyspring.repository.MemberRepository;
 @Controller
 public class MainController {
 
-    @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public MainController(MemberRepository memberRepository, PasswordEncoder passwordEncoder) {
+        this.memberRepository = memberRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("/")
     public String main() {
@@ -51,18 +54,19 @@ public class MainController {
         return "loginForm";
     }
 
-    @PostMapping("/join")
-    public String join(Member member) {
+    @PostMapping("/signUp")
+    @ResponseBody
+    public int signUp(@RequestBody Member member) {
         System.out.println("member = " + member);
-        member.setRole("ADMIN");
-        member.setGrade("F");
+        member.setRole("ROLE_FAMILY");
         member.setUseFlag("U");
         String rawPassword = member.getPassword();
         String encPassword = passwordEncoder.encode(rawPassword);
         member.setPassword(encPassword);
-        memberRepository.save(member); //회원가입
+        memberRepository.save(member);//회원가입
+        if (member == null) return 0;
 
-        return "redirect:/loginForm";
+        return 1;
     }
 
     @Secured("ROLE_ADMIN") // ROLE_ADMIN 권한을 가지고있어야만 접근 가능

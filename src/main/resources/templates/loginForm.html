@@ -6,42 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neumorphism Login Form</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8"/>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/spring-security.png">
 </head>
 <body>
 <div class="main">
     <div class="container a-container" id="a-container">
-        <form class="form" id="a-form" action="/join" method="POST">
+        <form class="form" id="signUpForm" >
             <h2 class="title">Create Account</h2>
             <div class="form__icons">
-                <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{svg/GoogleLogo.svg}" alt="" /></a>
-                <a href="/oauth2/authorization/facebook"><img class="form__icon" th:src="@{svg/facebook-seeklogo.com.svg}" /></a>
-                <a href="/oauth2/authorization/naver"><img class="form__icon" th:src="@{svg/naver.svg}" /></a>
-                <a href="/joinForm"><img class="form__icon" th:src="@{svg/KakaoTalk_logo.svg}" /></a>
+                <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{images/svg/GoogleLogo.svg}" alt="" /></a>
+                <a href="/oauth2/authorization/facebook"><img class="form__icon" th:src="@{images/svg/facebook-seeklogo.com.svg}" /></a>
+                <a href="/oauth2/authorization/naver"><img class="form__icon" th:src="@{images/svg/naver.svg}" /></a>
+                <a href="/joinForm"><img class="form__icon" th:src="@{images/svg/KakaoTalk_logo.svg}" /></a>
             </div>
             <span class="form__span">or use your registration account</span>
-            <input class="form__input" type="text" placeholder="ID" />
-            <input class="form__input" type="password" placeholder="Password" />
-            <input class="form__input" type="password" placeholder="Verify Password" />
-            <input class="form__input" type="text" placeholder="Name" />
-            <input class="form__input" type="text" placeholder="Phone" />
-            <input class="form__input" type="text" placeholder="Email" />
-            <button class="button submit">SIGN UP</button>
+            <input class="form__input" id="signUpId" type="text" placeholder="ID" />
+            <input class="form__input" id="signUpPassword" type="password" placeholder="Password" />
+            <input class="form__input" id="verifyPassword" type="password" placeholder="Verify Password" />
+            <input class="form__input" id="name" type="text" placeholder="Name" />
+            <input class="form__input" id="phone" type="text" placeholder="Phone" />
+            <input class="form__input" id="email" type="text" placeholder="Email" />
+            <button class="button submit" onclick="signUp()">SIGN UP</button>
         </form>
     </div>
     <div class="container b-container" id="b-container">
-        <form class="form" id="b-form" action="/login" method="POST" >
+        <form class="form" id="signInForm" action="/login" method="post">
             <h2 class="title">Sign in to Welcome Dak</h2>
             <div class="form__icons">
-                <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{svg/GoogleLogo.svg}" alt="" /></a>
-                <a href="/oauth2/authorization/facebook"><img class="form__icon" th:src="@{svg/facebook-seeklogo.com.svg}" /></a>
-                <a href="/oauth2/authorization/naver"><img class="form__icon" th:src="@{svg/naver.svg}" /></a>
-                <a href="/joinForm"><img class="form__icon" th:src="@{svg/KakaoTalk_logo.svg}" /></a>
+                <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{images/svg/GoogleLogo.svg}" alt="" /></a>
+                <a href="/oauth2/authorization/facebook"><img class="form__icon" th:src="@{images/svg/facebook-seeklogo.com.svg}" /></a>
+                <a href="/oauth2/authorization/naver"><img class="form__icon" th:src="@{images/svg/naver.svg}" /></a>
+                <a href="/joinForm"><img class="form__icon" th:src="@{images/svg/KakaoTalk_logo.svg}" /></a>
             </div>
             <span class="form__span">or use your account</span>
-            <input class="form__input" type="text" name="id" placeholder="ID" />
-            <input class="form__input" type="password" name="password" placeholder="Password" />
+            <input class="form__input" type="text" id="id" name="id" placeholder="ID" />
+            <input class="form__input" type="password" id="password" name="password" placeholder="Password" />
+            <div>
+                <span>로그인 유지하기</span>
+                <input type="checkbox" id="remember-me" name="remember-me" class="form__span" autocomplete="off" />
+            </div>
             <a class="form__link">Forgot your password?</a>
-            <button class="button submit">SIGN IN</button>
+            <button class="button" type="submit">SIGN IN</button>
         </form>
     </div>
     <div class="switch" id="switch-cnt">
@@ -90,5 +96,48 @@
         for (var i = 0; i < switchBtn.length; i++) switchBtn[i].addEventListener('click', changeForm);
     };
     window.addEventListener('load', mainF);
+
+    function signUp() {
+
+        let id = document.getElementById("signUpId").value;
+        let password = document.getElementById("signUpPassword").value;
+        let name = document.getElementById("name").value;
+        let phone = document.getElementById("phone").value;
+        let email = document.getElementById("email").value;
+        let param = {
+            id: id,
+            password: password,
+            name: name,
+            phone: phone,
+            email: email
+        }
+
+        fetch('/signUp', {
+            method: "POST",
+            body: JSON.stringify(param),
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if(data === 0){
+                    alert('실패');
+                }else if(data >= 1){
+                    location.href = "/";
+
+                }else if(data === undefined){
+                    let type = 'error';
+                    let title_msg = data.msg;
+                    let msg = data.msg2;
+                    let url;
+                }
+            });
+    }
 </script>
 </html>

@@ -23,8 +23,8 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(Member member) {
-        memberRepository.findById(member.getId())
-                .ifPresent(m -> { // Null이 아니라 값이 있으면 동작
+        Optional<Member> memberEntity = Optional.ofNullable(memberRepository.findById(member.getId()));
+        memberEntity.ifPresent(m -> { // Null이 아니라 값이 있으면 동작
                     throw new IllegalStateException("이미 존재하는 회원입니다.");
                 });
     }

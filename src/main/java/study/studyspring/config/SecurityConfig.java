@@ -1,12 +1,15 @@
 package study.studyspring.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import study.studyspring.config.oauth.PrincipalOauth2UserService;
 
 @Configuration
@@ -22,28 +25,48 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable(); //
+        http.httpBasic().disable();
+        http.csrf().disable();  // http.csrf() -> 정상적인 페이지에는 Csrf Token 값을 알려줘야 하는데 Tymeleaf에서는 페이지를 만들때 자동으로 Csrf Token을 넣어줍니다.
+        //따로 추가하지 않았는데 아래와 같은 코드가 form tag안에 자동으로 생성됩니다.
+        //대신 굳이 사용자에게 보여줄 필요가 없는 값이기 때문에 hidden으로 처리한다.rest api를 이용한 서버라면, session 기반 인증과는 다르게 stateless하기 때문에 서버에 인증정보를 보관하지 않기때문에 disable시킨다.
+        http.rememberMe(); // remember-me 토큰 사용(로그인 유지하기 기능), remember-me 토큰 브라우저를 꺼도 장시간(기본 2주) 남아있는다. remember-me 토큰을 사용하면 셰션을 다시 연결시켜준다. 주의사항으로는 서버를 끄게 되면 브라우저에는 remember-me 토큰 남아있지만 서버에는 remember-me 토큰을 잃어버리기때문에 로그아웃이 된다.
+        // RememberMeAuthenticationFilter 장시간 로그인을 유지시킬 때 사용, 설정으로 remember-me name이나 시간 설정 가능
+        http.anonymous().principal("anonymousUser");
+        // 현재 사용자가 익명 사용자인지, 인증 사용자인지 구분할 수 있다는 장점
+        // 비회원 인증(정상적인 경로로 접속하지않으면 비회원도 아니게 됨.)
+        // AnonymousAuthenticationFilter 필터로 인해 시큐리티에서는 SecurityContextHolder.getContext().getAuthentication() 를 하더라도 항상 인증 객체가 있기에 비로그인 사용자(익명 사용자)를 체크하기 위해서는 Role 검사를 해야 한다.
         http.authorizeRequests()
+                .antMatchers("/","/signUp").permitAll() // 인증없이 가능
                 .antMatchers("/member/**").authenticated() // authenticated() 인증 후 접속 가능(인증만 되면 들어갈 수 있는 주소)
-                .antMatchers("/premium/**").access("hasRole('P') or hasRole('V')") // .access() 인증 + 권한
-                .antMatchers("/vip/**").access("hasRole('V')")// .access() 인증 + 권한
-                .anyRequest().permitAll()// 다른 요청들은 인증없이 가능
+                .antMatchers("/premium/**").access("hasRole('PREMIUM') or hasRole('VIP') or hasRole('ADMIN')") // .access() 인증 + 권한
+                .antMatchers("/vip/**").access("hasRole('VIP') or hasRole('ADMIN')")// .access() 인증 + 권한
+                .antMatchers("/admin/**").access("hasRole('ADMIN')")// .access() 인증 + 권한
+                .anyRequest().authenticated()// 다른 요청들은 인증받은 사람만 가능
                 .and()
                 .formLogin()
                 .loginPage("/loginForm") // 권한이 없으면 로그인페이지로 이동
                 // usernameParameter() => input 태그에서 name="username2"로 커스터마이징하기 위한 설정, PrincipalDetailsService에서 loadUserByUsername(String username2) 로 받아야 정상 작동
                 .usernameParameter("id")
                 .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
-                .defaultSuccessUrl("/");
-                //.and()
-                //.oauth2Login()
-                //.loginPage("/loginForm") // google 로그인이 완료된 뒤의 후처리가 필요.
-                // 1.코드받기(인증), 2.엑세스토큰(권한), 3.사용자프로필 정보를 가져옴,
-                // 4-1. 그 정보를 토대로 회원가입 자동 진행
-                //.userInfoEndpoint()// Tip. 코드x, (엑세스토큰 + 사용자프로필정보 o)
-                //.userService(principalOauth2UserService);
-        // 4-2 . (이메일,전화번호,이름,아이디), 추가 정보가 필요할 때 쇼핑몰 => (집주소), 백화점몰 => (vip등급,일반등급)
+                .defaultSuccessUrl("/")
+                .permitAll()
+                .and()
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/");
+    }
 
+    /**
+     * 특정 리소스에 대해서 SpringSecurity자체를 적용하지 않고 싶을 때 사용
+     * http.authorizeRequests().requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll() 과 결과적으로는 같은 코드
+     * 하지만 ignoring을 사용한 코드는 permitAll을 사용한 아래 코드와 다르게 아예 SpringSecurity의 대상에 포함되지 않는다.
+     * 즉, 어떤 필터도 실행되지 않기 때문에 ignoring을 사용한 코드가 성능적으로 우수
+     */
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // 정적 리소스 spring security 대상에서 제외
+        //web.ignoring().antMatchers("/images/**", "/css/**"); // 아래 코드와 같은 코드
+        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 }
 

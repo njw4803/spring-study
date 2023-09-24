@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import study.studyspring.domain.Member;
+import study.studyspring.exception.UserNotFoundException;
 import study.studyspring.repository.MemberRepository;
 
 import java.util.Optional;
@@ -25,9 +26,12 @@ public class PrincipalDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
 
+        System.out.println("id = " + id);
         // Null이 아니라 값이 있으면 동작
-        memberRepository.findById(id)
-                .ifPresent(PrincipalDetails::new);
+        Member memberEntity = memberRepository.findById(id);
+        if (memberEntity != null) {
+            return new PrincipalDetails(memberEntity);
+        }
         return null;
     }
 
