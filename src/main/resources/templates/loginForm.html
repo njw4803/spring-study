@@ -12,7 +12,7 @@
 <body>
 <div class="main">
     <div class="container a-container" id="a-container">
-        <form class="form" id="signUpForm" >
+        <form class="form" id="signUpForm">
             <h2 class="title">Create Account</h2>
             <div class="form__icons">
                 <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{images/svg/GoogleLogo.svg}" alt="" /></a>
@@ -31,7 +31,7 @@
         </form>
     </div>
     <div class="container b-container" id="b-container">
-        <form class="form" id="signInForm" action="/login" method="post">
+        <form class="form" id="signInForm">
             <h2 class="title">Sign in to Welcome Dak</h2>
             <div class="form__icons">
                 <a href="/oauth2/authorization/google"><img class="form__icon" th:src="@{images/svg/GoogleLogo.svg}" alt="" /></a>
@@ -47,7 +47,7 @@
                 <input type="checkbox" id="remember-me" name="remember-me" class="form__span" autocomplete="off" />
             </div>
             <a class="form__link">Forgot your password?</a>
-            <button class="button" type="submit">SIGN IN</button>
+            <button class="button submit" onclick="signIn()">SIGN IN</button>
         </form>
     </div>
     <div class="switch" id="switch-cnt">
@@ -96,6 +96,34 @@
         for (var i = 0; i < switchBtn.length; i++) switchBtn[i].addEventListener('click', changeForm);
     };
     window.addEventListener('load', mainF);
+
+    function signIn() {
+
+        alert('test');
+        let id = document.getElementById("id").value;
+        let password = document.getElementById("password").value;
+        let param = {
+            id: id,
+            password: password
+        }
+
+        fetch('/login', {
+            method: "POST",
+            body: JSON.stringify(param),
+            mode: 'cors', // no-cors, *cors, same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                location.href = "/";
+            });
+    }
 
     function signUp() {
 

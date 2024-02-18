@@ -1,15 +1,12 @@
 package study.studyspring.domain;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @MappedSuperclass
 public abstract class BaseEntity {
 
@@ -25,4 +22,7 @@ public abstract class BaseEntity {
     //@UpdateTimestamp Update 쿼리가 발생했을 때 현재 시간 값을 적용.
     private LocalDateTime updateDate;
 
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
 }

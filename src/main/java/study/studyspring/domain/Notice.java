@@ -3,12 +3,9 @@ package study.studyspring.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table
@@ -32,10 +29,7 @@ public class Notice extends BaseEntity {
     @Lob
     private String content;
 
-    public Notice(
-            String title,
-            String content
-    ) {
+    public Notice(String title, String content) {
         this.title = title;
         this.content = content;
     }

@@ -1,17 +1,14 @@
 package study.studyspring.domain;
 
-import io.swagger.models.auth.In;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
-@Table(name = "MEMBER")
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // default는 public
+@Table(name = "USER")
 //@DynamicInsert (insert 시 null 인필드 제외)  - DB에 default가 설정되어있을 시 사용
 /*
 @DynamicUpdate (update 시 null 인필드 제외) - 참고:https://huisam.tistory.com/entry/jpa-query-statement
@@ -19,10 +16,11 @@ import javax.persistence.*;
         그래서 application 성능에 안좋은 영향을 미칠수가 있다는 단점 또한 존재
 DynamicUpdate 는 OptimisticLocking 을 사용할 때만 고려
 */
-public class Member extends BaseEntity {
+public class User extends BaseEntity {
 
     @Id
-    @Column(name = "idx") @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY DB가 자동으로 생성해줌
+    @Column(name = "idx")
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // IDENTITY DB가 자동으로 생성해줌
     private Long idx;
     private String id;
     private String password;
@@ -37,10 +35,46 @@ public class Member extends BaseEntity {
     private String provider;
     private String providerId;
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setUseFlag(String useFlag) {
+        this.useFlag = useFlag;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setProviderId(String providerId) {
+        this.providerId = providerId;
+    }
+
     @Builder
-    public Member(String id, String password, String name,
-                  String phone, String email, String role, String useFlag,
-                  String provider, String providerId) {
+    public User(String id, String password, String name,
+                String phone, String email, String role, String useFlag,
+                String provider, String providerId) {
         this.id = id;
         this.password = password;
         this.name = name;
@@ -48,7 +82,7 @@ public class Member extends BaseEntity {
         this.email = email;
         this.role = role;
         this.useFlag = useFlag;
-        this.provider = provider;
-        this.providerId = providerId;
+        //this.provider = provider;
+        //this.providerId = providerId;
     }
 }

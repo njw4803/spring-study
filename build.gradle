@@ -8,7 +8,7 @@ group = 'study'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '11'
+	sourceCompatibility = '17'
 }
 
 configurations {
@@ -56,6 +56,13 @@ dependencies {
 
 	// OAuth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' //oauth2
+
+	// jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+	// jwt
+	implementation 'com.auth0:java-jwt:4.3.0'
 }
 
 tasks.named('test') {

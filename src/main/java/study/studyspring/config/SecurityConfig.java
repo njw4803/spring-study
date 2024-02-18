@@ -1,59 +1,65 @@
 package study.studyspring.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import study.studyspring.config.oauth.PrincipalOauth2UserService;
+import org.springframework.web.filter.CorsFilter;
+import study.studyspring.config.auth.jwt.JwtAuthenticationFilter;
+import study.studyspring.config.auth.jwt.JwtAuthorizationFilter;
+import study.studyspring.repository.UserRepository;
 
-@Configuration
+@Configuration // 스프링이 뜰 때  @Configuration 읽고 스프링 빈에 등록한다.
 @EnableWebSecurity // 활성화, 스프링 시큐리티 필터(SecurityConfig)가 스프링 필터체인에 등록됨
-@EnableGlobalMethodSecurity(securedEnabled = true)
-// securedEnabled => secured 어노테이션 활성화
-// prePostEnabled => preAuthorize, postAuthorize 어노테이션 활성화
+@EnableGlobalMethodSecurity(securedEnabled = true) // securedEnabled => secured 어노테이션 활성화, prePostEnabled => preAuthorize, postAuthorize 어노테이션 활성화
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private PrincipalOauth2UserService principalOauth2UserService;
+    private final CorsFilter corsFilter;
+    private final UserRepository userRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.httpBasic().disable();
-        http.csrf().disable();  // http.csrf() -> 정상적인 페이지에는 Csrf Token 값을 알려줘야 하는데 Tymeleaf에서는 페이지를 만들때 자동으로 Csrf Token을 넣어줍니다.
-        //따로 추가하지 않았는데 아래와 같은 코드가 form tag안에 자동으로 생성됩니다.
+        http.csrf().disable();  // http.csrf() -> 정상적인 페이지에는 Csrf Token 값을 알려줘야 하는데 Tymeleaf에서는 페이지를 만들때 자동으로 Csrf Token을 넣어준다.
+        //따로 추가하지 않았는데 아래와 같은 코드가 form tag안에 자동으로 생성된다.
         //대신 굳이 사용자에게 보여줄 필요가 없는 값이기 때문에 hidden으로 처리한다.rest api를 이용한 서버라면, session 기반 인증과는 다르게 stateless하기 때문에 서버에 인증정보를 보관하지 않기때문에 disable시킨다.
-        http.rememberMe(); // remember-me 토큰 사용(로그인 유지하기 기능), remember-me 토큰 브라우저를 꺼도 장시간(기본 2주) 남아있는다. remember-me 토큰을 사용하면 셰션을 다시 연결시켜준다. 주의사항으로는 서버를 끄게 되면 브라우저에는 remember-me 토큰 남아있지만 서버에는 remember-me 토큰을 잃어버리기때문에 로그아웃이 된다.
-        // RememberMeAuthenticationFilter 장시간 로그인을 유지시킬 때 사용, 설정으로 remember-me name이나 시간 설정 가능
-        http.anonymous().principal("anonymousUser");
-        // 현재 사용자가 익명 사용자인지, 인증 사용자인지 구분할 수 있다는 장점
-        // 비회원 인증(정상적인 경로로 접속하지않으면 비회원도 아니게 됨.)
-        // AnonymousAuthenticationFilter 필터로 인해 시큐리티에서는 SecurityContextHolder.getContext().getAuthentication() 를 하더라도 항상 인증 객체가 있기에 비로그인 사용자(익명 사용자)를 체크하기 위해서는 Role 검사를 해야 한다.
-        http.authorizeRequests()
-                .antMatchers("/","/signUp").permitAll() // 인증없이 가능
-                .antMatchers("/member/**").authenticated() // authenticated() 인증 후 접속 가능(인증만 되면 들어갈 수 있는 주소)
-                .antMatchers("/premium/**").access("hasRole('PREMIUM') or hasRole('VIP') or hasRole('ADMIN')") // .access() 인증 + 권한
-                .antMatchers("/vip/**").access("hasRole('VIP') or hasRole('ADMIN')")// .access() 인증 + 권한
-                .antMatchers("/admin/**").access("hasRole('ADMIN')")// .access() 인증 + 권한
-                .anyRequest().authenticated()// 다른 요청들은 인증받은 사람만 가능
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션을 만드는 방식을 사용하진않음 설정
                 .and()
-                .formLogin()
-                .loginPage("/loginForm") // 권한이 없으면 로그인페이지로 이동
-                // usernameParameter() => input 태그에서 name="username2"로 커스터마이징하기 위한 설정, PrincipalDetailsService에서 loadUserByUsername(String username2) 로 받아야 정상 작동
-                .usernameParameter("id")
-                .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
-                .defaultSuccessUrl("/")
-                .permitAll()
+                .addFilter(corsFilter) //크로스 오리진 요청이 와도 허용(CORS)하는 설정, @CrossOrigin(인증이 필요 없는 경우 사용), 시큐리티 필터에 등록 (인증이 필요한 경우) , CORS 참고:https://inpa.tistory.com/entry/WEB-%F0%9F%93%9A-CORS-%F0%9F%92%AF-%EC%A0%95%EB%A6%AC-%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-%F0%9F%91%8F
+                .formLogin().disable()
+                .httpBasic().disable()
+                // httpBasic().disable() -> headers에 Anthorization:ID,PW 담아서 요청하는 방식이 http Basic 인증 방식.
+                // 매번 요청할 때마다 아이디랑 패스워드를 달고 요청. 쿠키에 세션을 만들 필요가 없음.
+                // 확장성은 좋으나 아이디와 패스워드가 암호화가 안되기때문에 중간에 노출이 될 수 있다.
+                // https를 사용하면 아이디와 패스워드가 암호화된다.
+                // headers에 Anthorization:토큰(ID와 PW를 통해 만듬)을 넣는 방식(Bearer 방식)을 사용하기위해 http Basic방식을 disable 시킨다.
+                // Bearer 방식 -> 토큰을 들고 가는 방식이어서 노출이 되면 안되지만 노출이 돼도 아이디랑 비밀번호를 노출되는건 아니기때문에 basic 방식보다는 안전하다.
+                // 토큰은 로그인 할 때마다 서버쪽에서 다시 만들어주고 유효시간도 있기때문에 한 번 노출된다고 위험하진않다.
+                // 토큰은 JWT(JSON WEB TOKEN) 사용, 세션 사용X
+                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 꼭 전달해줘야하는 파라미터 AuthenticationManager. 로그인 컨트롤을 위해 UsernamePasswordAuthenticationFilter를 상속받은 JwtAuthenticationFilter객체를 넣어준다.
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository))
+                .authorizeRequests()
+                .antMatchers("/","api/v1/signUp","/loginForm","/token","/home","/error","/logout","/login").permitAll() // 인증없이 가능
+                .antMatchers("/api/v1/premium/**").access("hasRole('PREMIUM') or hasRole('VIP') or hasRole('ADMIN')") // .access() 인증 + 권한
+                .antMatchers("/api/v1/vip/**").access("hasRole('VIP') or hasRole('ADMIN')")// .access() 인증 + 권한
+                .antMatchers("/api/v1/admin/**").access("hasRole('ADMIN')")// .access() 인증 + 권한
+                .anyRequest().authenticated()// authenticated() 인증 후 접속 가능(인증만 되면 들어갈 수 있는 주소), 다른 요청들은 인증받은 사람만 가능
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/");
+        http.anonymous().principal("anonymousUser");
+        // 현재 사용자가 익명 사용자인지, 인증 사용자인지 구분할 수 있다는 장점
+        // 비회원 인증(정상적인 경로로 접속하지않으면 비회원도 아니게 됨.)
+        // AnonymousAuthenticationFilter 필터로 인해 시큐리티에서는 SecurityContextHolder.getContext().getAuthentication() 를 하더라도 항상 인증 객체가 있기에 비로그인 사용자(익명 사용자)를 체크하기 위해서는 Role 검사를 해야 한다.
+
     }
 
     /**
@@ -88,7 +94,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     따라서 서버에 인증정보를 저장하지 않기 때문에 굳이 불필요한 csrf 코드들을 작성할 필요가 없다.
     rest api에서는 csrf 공격으로부터 안전하고 매번 api 요청으로부터 csrf 토큰을 받지 않아도 되어 이 기능을 disable() 하는 것이 더 좋은 판단
 
-    https://velog.io/@wonizizi99/SpringSpring-security-CSRF%EB%9E%80-disable
+    CSRF 참고:https://velog.io/@wonizizi99/SpringSpring-security-CSRF%EB%9E%80-disable
     https://covenant.tistory.com/279
     https://velog.io/@woosim34/Spring-Spring-Security-%EC%84%A4%EC%A0%95-%EB%B0%8F-%EA%B5%AC%ED%98%84SessionSpring-boot3.0-%EC%9D%B4%EC%83%81
  */
