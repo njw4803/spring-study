@@ -23,4 +23,5 @@ public class MainController {
     public @ResponseBody String info() {
         return "개인정보";
     }
+
 }
