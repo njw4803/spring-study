@@ -63,7 +63,6 @@ public class PrincipalDetails implements UserDetails {
 
         // 우리 사이트에서 1년동안 회원이 로그인을 안하면 휴먼 계정으로 하기로함
         // 현재시간 - 로그인 시간 => 1년을 초과하면 retufn false;
-
         return true;
     }
 }
