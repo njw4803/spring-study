@@ -12,6 +12,7 @@ public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() { // 필터에 등록해줘야한다.
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
@@ -23,5 +24,6 @@ public class CorsConfig {
         config.addAllowedMethod("*"); // 모든 post,get,delete,patch,put 요청을 허용하겠다
         source.registerCorsConfiguration("/api/**",config); // /api/** 로 들어오는 모든 주소는 이 config 설정을 따름
         return new CorsFilter(source);
+
     }
 }
