@@ -12,4 +12,5 @@ public class NoteRegisterDto {
 
     private String title;
     private String content;
+
 }
