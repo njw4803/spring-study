@@ -36,6 +36,7 @@ public class ApiController {
 
     @PostMapping("/signUp")
     public int signUp(@RequestBody User user) {
+
         System.out.println("user = " + user);
         user.setRole("ROLE_FAMILY");
         user.setUseFlag("U");
