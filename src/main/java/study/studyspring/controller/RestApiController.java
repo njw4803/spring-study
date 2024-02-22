@@ -17,5 +17,4 @@ public class RestApiController {
         return "<h1>token</h1>";
     }
 
-
 }
