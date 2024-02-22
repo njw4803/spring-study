@@ -25,4 +25,5 @@ public abstract class BaseEntity {
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
+
 }
