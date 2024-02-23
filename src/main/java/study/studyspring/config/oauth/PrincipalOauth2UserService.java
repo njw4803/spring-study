@@ -69,4 +69,5 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         return new PrincipalDetails(memberEntity, oauth2User.getAttributes());
     }*/
+
 }
