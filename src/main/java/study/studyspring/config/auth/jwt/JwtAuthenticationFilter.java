@@ -62,7 +62,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         return null;
 
-
     }
 
     // attemptAuthentication 실행 후 인증이 정상적으로 되었으면 successfulAuthentication가 실행 됨
