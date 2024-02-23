@@ -17,7 +17,6 @@ import study.studyspring.repository.UserRepository;
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
 
-
     private final UserRepository userRepository;
 
     // loadUserByUsername() return 시 시큐리티 session(내부 Authentication(내부 UserDetails))에 들어간다.
