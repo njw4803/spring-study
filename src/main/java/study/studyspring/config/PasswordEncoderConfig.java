@@ -15,14 +15,18 @@ public class PasswordEncoderConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
 
-        //기본 기본 전략 Bcrypt 방식으로만 사용할 경우
+        /**
+         * PasswordEncoder는 기본적으로 bcrypt 방식을 추천한다.
+         * PasswordEncoder가 제공하는 방식으로 encode
+         * 기본 전략 Bcrypt 방식으로 사용할 경우
+        */
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     /*
     // 다른 암호화 방식으로 사용할 경우
     @Bean
-    public Pbkdf2PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new Pbkdf2PasswordEncoder();
     }
     */
