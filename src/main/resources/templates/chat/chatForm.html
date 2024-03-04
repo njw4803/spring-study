@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>채팅</h1>
+<pre type="text" id="messages"></pre>
+<input type="text" id="message">
+<button onclick="sendText()">전송</button>
+<button onclick="chatClose()">연결 끊기</button>
+</body>
+</html>
+<script>
+    let socket = new WebSocket("ws://127.0.0.1:8080/socketServer");
+
+    let today = new Date();
+
+    let year = today.getFullYear();
+    let month = ('0' + (today.getMonth() + 1)).slice(-2);
+    let day = ('0' + today.getDate()).slice(-2);
+
+    let week = "";
+    switch (today.getDay()) {
+        case 0: week = "일"; break;
+        case 1: week = "월"; break;
+        case 2: week = "화"; break;
+        case 3: week = "수"; break;
+        case 4: week = "목"; break;
+        case 5: week = "금"; break;
+        case 6: week = "토"; break;
+    }
+
+    let dateString = year + '년 ' + month  + '월 ' + day + '일' + '(' + week + ')';
+    document.getElementById("messages").append(dateString);
+
+    socket.addEventListener("open", () => {
+        let clientID = "test";
+        today = new Date();
+
+        let hours = ('0' + today.getHours()).slice(-2);
+        let minutes = ('0' + today.getMinutes()).slice(-2);
+        let seconds = ('0' + today.getSeconds()).slice(-2);
+
+        let timeString = hours + ':' + minutes  + ':' + seconds;
+        let message = {
+            type: "message",
+            text: "상대방이 입장하였습니다.",
+            id: clientID,
+            dateTime: timeString,
+            status: true,
+            connect: true,
+        };
+
+        // Send the msg object as a JSON-formatted string.
+        socket.send(JSON.stringify(message));
+        console.log("WebSocket is open");
+    });
+
+    // Send text to all users through the server
+    function sendText(event) {
+        // Construct a msg object containing the data the server needs to process the message from the chat client.
+        let clientID = "test";
+        today = new Date();
+
+        let hours = ('0' + today.getHours()).slice(-2);
+        let minutes = ('0' + today.getMinutes()).slice(-2);
+        let seconds = ('0' + today.getSeconds()).slice(-2);
+
+        let timeString = hours + ':' + minutes  + ':' + seconds;
+        let message = {
+            type: "message",
+            text: document.getElementById("message").value,
+            id: clientID,
+            dateTime: timeString,
+            status: true
+        };
+
+        // Send the msg object as a JSON-formatted string.
+        socket.send(JSON.stringify(message));
+
+        // Blank the text input element, ready to receive the next line of text from the user.
+        document.getElementById("message").value = "";
+        document.getElementById("messages").append("\n[" + message.dateTime + "]나:" + message.text);
+    }
+
+    socket.onclose = function () {
+        console.log("채팅 종료");
+    };
+
+    socket.onerror = function () {
+        socket.close();
+        console.log("서버 error");
+    }
+
+    socket.onmessage = function (event) {
+      console.log(event.data);
+      if (JSON.parse(event.data).connect) {
+          document.getElementById("messages").append("\n[" + JSON.parse(event.data).dateTime + "]" + JSON.parse(event.data).text);
+          return;
+      }
+      JSON.parse(event.data).status ? document.getElementById("messages").append("\n[" + JSON.parse(event.data).dateTime + "]상대방:" + JSON.parse(event.data).text) : document.getElementById("messages").append("\n" + JSON.parse(event.data).text);
+    };
+
+    function chatClose() {
+        let clientID = "test";
+        let message = {
+            type: "message",
+            text: "상대방이 채팅방을 나갔습니다.",
+            id: clientID,
+            date: Date.now(),
+            status: false
+        };
+        socket.send(JSON.stringify(message));
+        document.getElementById("message").value = "";
+        socket.close();
+        document.getElementById("messages").append("\n채팅방을 나갔습니다.");
+    }
+
+</script>

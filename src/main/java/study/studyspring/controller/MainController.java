@@ -18,6 +18,13 @@ public class MainController {
         return "loginForm";
     }
 
+    @GetMapping("/chatForm")
+    public String chatForm() {
+        return "chat/chatForm";
+    }
+
+
+
     @Secured("ROLE_ADMIN") // ROLE_ADMIN 권한을 가지고있어야만 접근 가능
     @GetMapping("/info")
     public @ResponseBody String info() {
