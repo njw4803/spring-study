@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 꼭 전달해줘야하는 파라미터 AuthenticationManager. 로그인 컨트롤을 위해 UsernamePasswordAuthenticationFilter를 상속받은 JwtAuthenticationFilter객체를 넣어준다.
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository))
                 .authorizeRequests()
-                .antMatchers("/","api/v1/signUp","/loginForm","/token","/home","/error","/logout","/login").permitAll() // 인증없이 가능
+                .antMatchers("/","/test","api/v1/signUp","/loginForm","/token","/home","/error","/logout","/login").permitAll() // 인증없이 가능
                 .antMatchers("/api/v1/premium/**").access("hasRole('PREMIUM') or hasRole('VIP') or hasRole('ADMIN')") // .access() 인증 + 권한
                 .antMatchers("/api/v1/vip/**").access("hasRole('VIP') or hasRole('ADMIN')")// .access() 인증 + 권한
                 .antMatchers("/api/v1/admin/**").access("hasRole('ADMIN')")// .access() 인증 + 권한
