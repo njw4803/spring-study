@@ -6,6 +6,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import study.studyspring.dto.Message;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,14 +20,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
     // WebSocket 연결
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        System.out.println("WebSocket 연결" + this);
+        log.info("WebSocket 연결 {}",this);
         CLIENTS.put(session.getId(), session);
     }
 
     // WebSocket 연결 종료
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        System.out.println("WebSocket 종료" + this);
+        log.info("WebSocket 종료 {}",this);
         CLIENTS.remove(session.getId());
     }
 
@@ -34,6 +35,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String id = session.getId();  //메시지를 보낸 아이디
+
         CLIENTS.entrySet().forEach( arg -> {
             if(!arg.getKey().equals(id)) {  //같은 아이디가 아니면 메시지를 전달합니다.
                 try {
@@ -49,6 +51,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception)
             throws Exception {
+        log.info("WebSocket 통신 에러");
         super.handleTransportError(session, exception);
     }
 }
