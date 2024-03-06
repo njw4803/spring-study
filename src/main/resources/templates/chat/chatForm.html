@@ -12,8 +12,129 @@
 <button onclick="chatClose()">연결 끊기</button>
 </body>
 </html>
+<!--
 <script>
-    const socket = new WebSocket("ws://127.0.0.1:8080/socketServer");
+
+    let stompClient = null;
+    let username = null;
+
+    document.addEventListener("DOMContentLoaded", function(){
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = ('0' + (today.getMonth() + 1)).slice(-2);
+        const day = ('0' + today.getDate()).slice(-2);
+
+        let week = "";
+        switch (today.getDay()) {
+            case 0: week = "일"; break;
+            case 1: week = "월"; break;
+            case 2: week = "화"; break;
+            case 3: week = "수"; break;
+            case 4: week = "목"; break;
+            case 5: week = "금"; break;
+            case 6: week = "토"; break;
+        }
+
+        const dateString = year + '년 ' + month  + '월 ' + day + '일' + '(' + week + ')';
+        document.getElementById("messages").append(dateString);
+
+        connect();
+    });
+
+    function connect(event) {
+        username = "test";
+
+        if (username) {
+            let socket = new SockJS('/ws');
+
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, onConnected, onError);
+        }
+        event.preventDefault();
+    }
+
+    function onConnected() {
+        // Subscribe to the Public Topic
+        stompClient.subscribe('/topic/public', onMessageReceived);
+
+        // Tell your username to the server
+        stompClient.send("/app/chat.addUser",
+            {},
+            JSON.stringify({sender: username, type: 'JOIN'})
+        )
+
+    }
+
+    function onError() {
+
+    }
+
+    function sendMessage(event) {
+        let messageContent = messageInput.value.trim();
+        if(messageContent && stompClient) {
+            let chatMessage = {
+                sender: username,
+                content: messageInput.value,
+                type: 'CHAT'
+            };
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+            messageInput.value = '';
+        }
+        event.preventDefault();
+    }
+
+    function onMessageReceived(payload) {
+        let message = JSON.parse(payload.body);
+
+        let messageElement = document.createElement('li');
+
+        if(message.type === 'JOIN') {
+            messageElement.classList.add('event-message');
+            message.content = message.sender + ' joined!';
+        } else if (message.type === 'LEAVE') {
+            messageElement.classList.add('event-message');
+            message.content = message.sender + ' left!';
+        } else {
+            messageElement.classList.add('chat-message');
+
+            let avatarElement = document.createElement('i');
+            let avatarText = document.createTextNode(message.sender[0]);
+            avatarElement.appendChild(avatarText);
+            avatarElement.style['background-color'] = getAvatarColor(message.sender);
+
+            messageElement.appendChild(avatarElement);
+
+            let usernameElement = document.createElement('span');
+            let usernameText = document.createTextNode(message.sender);
+            usernameElement.appendChild(usernameText);
+            messageElement.appendChild(usernameElement);
+        }
+
+        let textElement = document.createElement('p');
+        let messageText = document.createTextNode(message.content);
+        textElement.appendChild(messageText);
+
+        messageElement.appendChild(textElement);
+
+        messageArea.appendChild(messageElement);
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    function getAvatarColor(messageSender) {
+        let hash = 0;
+        for (let i = 0; i < messageSender.length; i++) {
+            hash = 31 * hash + messageSender.charCodeAt(i);
+        }
+        let index = Math.abs(hash % colors.length);
+        return colors[index];
+    }
+</script>
+-->
+<script>
+    const socket = new WebSocket("ws://localhost:8080/socketServer");
+    const sse = new EventSource("http://localhost:8080/connect");
     const clientID = "test";
 
     document.addEventListener("DOMContentLoaded", function(){

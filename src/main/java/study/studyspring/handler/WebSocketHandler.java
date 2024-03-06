@@ -1,15 +1,13 @@
 package study.studyspring.handler;
 
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import study.studyspring.dto.Message;
-
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Slf4j
@@ -55,3 +53,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
         super.handleTransportError(session, exception);
     }
 }
+
+/*
+
+public class WebSocketHandler {
+
+}
+*/
