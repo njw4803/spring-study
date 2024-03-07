@@ -15,7 +15,6 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Component
 @RequiredArgsConstructor
 public class WebSocketEventListener {
-
     /*private static final Logger logger = LoggerFactory.getLogger(WebSocketEventListener.class);
 
     private final SimpMessageSendingOperations messagingTemplate;
