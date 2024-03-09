@@ -52,6 +52,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         log.info("WebSocket 통신 에러");
         super.handleTransportError(session, exception);
     }
+
 }
 
 /*
