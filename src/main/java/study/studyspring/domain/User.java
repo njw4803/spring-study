@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // default는 public
-@Table(name = "USER")
+@Table(name = "users")
 //@DynamicInsert (insert 시 null 인필드 제외)  - DB에 default가 설정되어있을 시 사용
 /*
 @DynamicUpdate (update 시 null 인필드 제외) - 참고:https://huisam.tistory.com/entry/jpa-query-statement
@@ -82,7 +82,7 @@ public class User extends BaseEntity {
         this.email = email;
         this.role = role;
         this.useFlag = useFlag;
-        //this.provider = provider;
-        //this.providerId = providerId;
+        this.provider = provider;
+        this.providerId = providerId;
     }
 }

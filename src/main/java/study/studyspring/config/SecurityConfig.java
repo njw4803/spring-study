@@ -13,6 +13,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.CorsFilter;
 import study.studyspring.config.auth.jwt.JwtAuthenticationFilter;
 import study.studyspring.config.auth.jwt.JwtAuthorizationFilter;
+import study.studyspring.config.oauth.HttpCookieOAuth2AuthorizationRequestRepository;
+import study.studyspring.config.oauth.OAuth2SuccessHandler;
+import study.studyspring.config.oauth.PrincipalOauth2UserService;
 import study.studyspring.repository.UserRepository;
 
 @Configuration // 스프링이 뜰 때  @Configuration 읽고 스프링 빈에 등록한다.
@@ -23,6 +26,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
     private final UserRepository userRepository;
+    private final PrincipalOauth2UserService principalOauth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -46,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // 꼭 전달해줘야하는 파라미터 AuthenticationManager. 로그인 컨트롤을 위해 UsernamePasswordAuthenticationFilter를 상속받은 JwtAuthenticationFilter객체를 넣어준다.
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(),userRepository))
                 .authorizeRequests()
-                .antMatchers("/","/connect","/send","/socketServer","/sub/*/*","/pub/*","/ws","/chatForm","api/v1/signUp","/loginForm","/token","/home","/error","/logout","/login").permitAll() // 인증없이 가능
+                .antMatchers("/api/v1/signUp","/token","/error","/logout","/login","/oauth2/**","/login/oauth2/**").permitAll() // 인증없이 가능
                 .antMatchers("/api/v1/premium/**").access("hasRole('PREMIUM') or hasRole('VIP') or hasRole('ADMIN')") // .access() 인증 + 권한
                 .antMatchers("/api/v1/vip/**").access("hasRole('VIP') or hasRole('ADMIN')")// .access() 인증 + 권한
                 .antMatchers("/api/v1/admin/**").access("hasRole('ADMIN')")// .access() 인증 + 권한
@@ -55,6 +61,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/");
+
+        // 소셜 로그인(OAuth2) 활성화. 인가요청은 쿠키에 저장(STATELESS 대응),
+        // 사용자 정보는 PrincipalOauth2UserService 로 처리, 성공 시 OAuth2SuccessHandler 가 JWT 발급 후 프론트로 리다이렉트.
+        http.oauth2Login()
+                .authorizationEndpoint()
+                    .authorizationRequestRepository(cookieAuthorizationRequestRepository)
+                    .and()
+                .userInfoEndpoint()
+                    .userService(principalOauth2UserService)
+                    .and()
+                .successHandler(oAuth2SuccessHandler);
+
         http.anonymous().principal("anonymousUser");
         // 현재 사용자가 익명 사용자인지, 인증 사용자인지 구분할 수 있다는 장점
         // 비회원 인증(정상적인 경로로 접속하지않으면 비회원도 아니게 됨.)
